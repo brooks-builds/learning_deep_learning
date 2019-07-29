@@ -10,7 +10,8 @@ const {
   createMatrix,
   outerProduct,
   scalarMatrixMultiply,
-  matrixSubtract
+  matrixSubtract,
+  createZerosMatrix
 } = require("../deep_learning_functions");
 
 const assert = chai.assert;
@@ -111,7 +112,15 @@ describe("createMatrix", () => {
       [undefined, undefined, undefined, undefined, undefined]
     ];
 
-    assert(createMatrix(width, height), expectedOutput);
+    assert.deepEqual(createMatrix(width, height), expectedOutput);
+  });
+
+  it("should create a matrix with values set to 0", () => {
+    const width = 5;
+    const height = 3;
+    const expectedOutput = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
+
+    assert.deepEqual(createZerosMatrix(width, height), expectedOutput);
   });
 });
 

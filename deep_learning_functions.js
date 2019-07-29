@@ -14,8 +14,8 @@ function vectorSubtract(vector1, vector2) {
   return vector1.map((firstNumber, index) => firstNumber - vector2[index]);
 }
 
-function calculateErrors(vector1, vector2) {
-  const delta = vectorSubtract(vector1, vector2);
+function calculateErrors(predictions, expectedResults) {
+  const delta = vectorSubtract(predictions, expectedResults);
 
   return delta.map(number => number * number);
 }
@@ -40,27 +40,31 @@ function createMatrix(width, height) {
   const matrix = [];
 
   for (let _count = 0; _count < height; _count = _count + 1) {
-    matrix.push(new Array(width));
+    const row = [];
+    for (_rowCount = 0; _rowCount < width; _rowCount = _rowCount + 1) {
+      row.push(undefined);
+    }
+    matrix.push(row);
   }
 
   return matrix;
 }
 
-function outerProduct(vector1, vector2) {
-  const matrix = createMatrix(vector1.length, vector2.length);
+function outerProduct(inputs, deltas) {
+  const matrix = createMatrix(inputs.length, deltas.length);
 
   for (
     let matrixHeightIndex = 0;
-    matrixHeightIndex < vector2.length;
+    matrixHeightIndex < deltas.length;
     matrixHeightIndex = matrixHeightIndex + 1
   ) {
     for (
       let matrixWidthIndex = 0;
-      matrixWidthIndex < vector1.length;
+      matrixWidthIndex < inputs.length;
       matrixWidthIndex = matrixWidthIndex + 1
     ) {
       matrix[matrixHeightIndex][matrixWidthIndex] =
-        vector1[matrixHeightIndex] * vector2[matrixWidthIndex];
+        inputs[matrixHeightIndex] * deltas[matrixWidthIndex];
     }
   }
 
@@ -77,6 +81,12 @@ function matrixSubtract(matrix1, matrix2) {
   );
 }
 
+function createZerosMatrix(width, height) {
+  const matrix = createMatrix(width, height);
+
+  return matrix.map(row => row.map(_ => 0));
+}
+
 module.exports = {
   vectorMultiply,
   scalarVectorMultiply,
@@ -87,5 +97,6 @@ module.exports = {
   createMatrix,
   outerProduct,
   scalarMatrixMultiply,
-  matrixSubtract
+  matrixSubtract,
+  createZerosMatrix
 };
