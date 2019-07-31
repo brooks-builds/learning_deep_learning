@@ -7,13 +7,16 @@ const {
   vectorSubtract,
   outerProduct,
   scalarMatrixMultiply,
-  matrixSubtract
+  matrixSubtract,
+  calculateAccuracy
 } = require("./deep_learning_functions");
 
 const imageSet = mnist.set(8000, 2000);
 
 const trainingImages = imageSet.training;
 const testImages = imageSet.test;
+const testImagesInputs = testImages.map(imageObject => imageObject.input);
+const testImagesOutputs = testImages.map(imageObject => imageObject.output);
 
 // console.log(trainingImages[0].input, trainingImages[0].output);
 // console.log(testImages[0].input, testImages[0].output);
@@ -24,40 +27,64 @@ let weights = createZerosMatrix(
 );
 const alpha = 0.01;
 
-for (
-  let trainingImagesIndex = 0;
-  trainingImagesIndex < 3;
-  trainingImagesIndex = trainingImagesIndex + 1
-) {
-  const currentTrainingImage = trainingImages[trainingImagesIndex].input;
-  const currentTrainingImageCorrectOutput =
-    trainingImages[trainingImagesIndex].output;
+function train() {
+  let errors;
 
-  // calculate prediction
-  const predictions = neuralNetwork(currentTrainingImage, weights);
+  for (
+    let trainingImagesIndex = 0;
+    trainingImagesIndex < trainingImages.length;
+    trainingImagesIndex = trainingImagesIndex + 1
+  ) {
+    // const currentTrainingImage = trainingImages[trainingImagesIndex].input;
+    const currentTrainingImage = trainingImages[0].input;
+    // const currentTrainingImageCorrectOutput =
+    // trainingImages[trainingImagesIndex].output;
+    const currentTrainingImageCorrectOutput = trainingImages[0].output;
 
-  // calculate errors
-  const errors = calculateErrors(
-    predictions,
-    currentTrainingImageCorrectOutput
-  ); // [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+    // calculate prediction
+    const predictions = neuralNetwork(currentTrainingImage, weights);
 
-  // calculate deltas
-  const deltas = vectorSubtract(predictions, currentTrainingImageCorrectOutput); // [0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
+    // calculate errors
+    errors = calculateErrors(predictions, currentTrainingImageCorrectOutput); // [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
 
-  // calculate weighted deltas
-  const weightedDeltas = outerProduct(currentTrainingImage, deltas);
-  console.log(weightedDeltas); // first 10 in each row are fine, NaN after
+    // calculate deltas
+    const deltas = vectorSubtract(
+      predictions,
+      currentTrainingImageCorrectOutput
+    ); // [0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
 
-  // update weights
-  const limitedWeightedDeltas = scalarMatrixMultiply(alpha, weightedDeltas);
-  const newWeights = matrixSubtract(weights, limitedWeightedDeltas);
+    // calculate weighted deltas
+    const weightedDeltas = outerProduct(currentTrainingImage, deltas);
 
-  weights = newWeights;
-  // has errors plateaued
-  // how good are we with the testImages?
-  // Should we keep going?
-  //   console.log(predictions, currentTrainingImageCorrectOutput);
+    // update weights
+    const limitedWeightedDeltas = scalarMatrixMultiply(alpha, weightedDeltas);
+    const newWeights = matrixSubtract(weights, limitedWeightedDeltas);
+
+    weights = newWeights;
+    // has errors plateaued
+    // how good are we with the testImages?
+    // Should we keep going?
+  }
+
+  return weights;
+}
+
+for (let count = 0; count < 2; count = count + 1) {
+  const currentWeights = JSON.stringify(weights);
+  const newWeights = train();
+  console.log(
+    "weights not updated?: ",
+    currentWeights === JSON.stringify(newWeights)
+  );
+  console.log(`training ${count} pass complete!`);
+  const accuracy = calculateAccuracy(
+    testImagesInputs,
+    weights,
+    testImagesOutputs,
+    neuralNetwork
+  );
+  console.log("accuracy: ", accuracy);
+  console.log("*****");
 }
 
 function neuralNetwork(inputs, weights) {

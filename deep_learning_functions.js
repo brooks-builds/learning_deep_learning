@@ -51,24 +51,7 @@ function createMatrix(width, height) {
 }
 
 function outerProduct(inputs, deltas) {
-  const matrix = createMatrix(inputs.length, deltas.length);
-
-  for (
-    let matrixHeightIndex = 0;
-    matrixHeightIndex < deltas.length;
-    matrixHeightIndex = matrixHeightIndex + 1
-  ) {
-    for (
-      let matrixWidthIndex = 0;
-      matrixWidthIndex < inputs.length;
-      matrixWidthIndex = matrixWidthIndex + 1
-    ) {
-      matrix[matrixHeightIndex][matrixWidthIndex] =
-        inputs[matrixHeightIndex] * deltas[matrixWidthIndex];
-    }
-  }
-
-  return matrix;
+  return deltas.map(delta => inputs.map(currentInput => currentInput * delta));
 }
 
 function scalarMatrixMultiply(scalar, matrix) {
@@ -87,6 +70,30 @@ function createZerosMatrix(width, height) {
   return matrix.map(row => row.map(_ => 0));
 }
 
+function calculateAccuracy(
+  inputs,
+  weights,
+  expectedPredictions,
+  neuralNetwork
+) {
+  let correctCount = 0;
+  const totalRunCount = inputs.length;
+
+  inputs.forEach((currentInput, index) => {
+    const predictions = neuralNetwork(currentInput, weights); // [0.1, 0.1, 0.999999, 0.1]
+    const predictionIndex = findLargestIndex(predictions);
+
+    if (expectedPredictions[index][predictionIndex] === 1)
+      correctCount = correctCount + 1;
+  });
+
+  return correctCount / totalRunCount;
+}
+
+function findLargestIndex(array) {
+  return array.findIndex(currentValue => currentValue === Math.max(...array));
+}
+
 module.exports = {
   vectorMultiply,
   scalarVectorMultiply,
@@ -98,5 +105,7 @@ module.exports = {
   outerProduct,
   scalarMatrixMultiply,
   matrixSubtract,
-  createZerosMatrix
+  createZerosMatrix,
+  findLargestIndex,
+  calculateAccuracy
 };

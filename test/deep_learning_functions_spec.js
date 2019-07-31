@@ -11,7 +11,9 @@ const {
   outerProduct,
   scalarMatrixMultiply,
   matrixSubtract,
-  createZerosMatrix
+  createZerosMatrix,
+  findLargestIndex,
+  calculateAccuracy
 } = require("../deep_learning_functions");
 
 const assert = chai.assert;
@@ -94,11 +96,24 @@ describe("dot", () => {
 
 describe("outerProduct", () => {
   it("should turn two vectors into a matrix", () => {
-    const vector1 = [1, 2, 3];
-    const vector2 = [4, 5, 6];
-    const expectedOutput = [[4, 5, 6], [8, 10, 12], [12, 15, 18]];
+    const inputs = [1, 2, 3];
+    const deltas = [4, 5, 6];
+    const expectedOutput = [[4, 8, 12], [5, 10, 15], [6, 12, 18]];
 
-    assert.deepEqual(outerProduct(vector1, vector2), expectedOutput);
+    assert.deepEqual(outerProduct(inputs, deltas), expectedOutput);
+  });
+
+  it("should return a matrix that was created from vectors of different sizes", () => {
+    const inputs = [1, 2, 3, 4, 5];
+    const deltas = [6, 7, 8];
+    const expectedOutput = [
+      //input 1, 2, 3, 4, 5
+      [6, 12, 18, 24, 30], // weight 1
+      [7, 14, 21, 28, 35], // weight 2
+      [8, 16, 24, 32, 40] // weight 3
+    ];
+
+    assert.deepEqual(outerProduct(inputs, deltas), expectedOutput);
   });
 });
 
@@ -141,5 +156,40 @@ describe("matrixSubtract", () => {
     const expectedOutput = [[9, 18, 27], [36, 45, 54], [63, 72, 81]];
 
     assert.deepEqual(matrixSubtract(matrix1, matrix2), expectedOutput);
+  });
+});
+
+describe("calculateAccuracy", () => {
+  it("should display the percent correct predictions", () => {
+    const neuralNetwork = () => [1, 0, 0];
+    const inputs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const weights = [];
+    const expectedPredictions = [
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [0, 0, 1],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [0, 1, 0],
+      [1, 0, 0]
+    ];
+    const expectedOutput = 0.8;
+
+    assert.equal(
+      calculateAccuracy(inputs, weights, expectedPredictions, neuralNetwork),
+      expectedOutput
+    );
+  });
+});
+
+describe("findLargestIndex", () => {
+  it("should find the index of the largest value of an array", () => {
+    const array = [0, 1, 2, 9, 4];
+    const expectedOutput = 3;
+
+    assert.equal(findLargestIndex(array), expectedOutput);
   });
 });
