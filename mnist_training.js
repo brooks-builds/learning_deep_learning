@@ -69,17 +69,12 @@ function train() {
   return weights;
 }
 
-for (let count = 0; count < 2; count = count + 1) {
-  const currentWeights = JSON.stringify(weights);
+for (let count = 0; count < 10000; count = count + 1) {
   const newWeights = train();
-  console.log(
-    "weights not updated?: ",
-    currentWeights === JSON.stringify(newWeights)
-  );
   console.log(`training ${count} pass complete!`);
   const accuracy = calculateAccuracy(
     testImagesInputs,
-    weights,
+    newWeights,
     testImagesOutputs,
     neuralNetwork
   );

@@ -67,7 +67,7 @@ function matrixSubtract(matrix1, matrix2) {
 function createZerosMatrix(width, height) {
   const matrix = createMatrix(width, height);
 
-  return matrix.map(row => row.map(_ => 0));
+  return matrix.map(row => row.map(_ => Math.random()));
 }
 
 function calculateAccuracy(
