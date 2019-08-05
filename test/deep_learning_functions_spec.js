@@ -13,7 +13,12 @@ const {
   matrixSubtract,
   createZerosMatrix,
   findLargestIndex,
-  calculateAccuracy
+  calculateAccuracy,
+  createRandomMatrix,
+  dotVectorMatrix,
+  relu,
+  transpose,
+  reluToDerivative
 } = require("../deep_learning_functions");
 
 const assert = chai.assert;
@@ -191,5 +196,68 @@ describe("findLargestIndex", () => {
     const expectedOutput = 3;
 
     assert.equal(findLargestIndex(array), expectedOutput);
+  });
+});
+
+describe("createRandomMatrix", () => {
+  it("should create a matrix with random numbers between -1 and 1", () => {
+    const width = 3;
+    const height = 4;
+    const matrix = createRandomMatrix(width, height);
+
+    assert.equal(matrix.length, height);
+
+    matrix.forEach(row => {
+      assert.equal(row.length, width);
+
+      row.forEach(item => {
+        assert.isAbove(item, -1);
+        assert.isBelow(item, 1);
+      });
+    });
+  });
+});
+
+describe("dotVectorMatrix", () => {
+  it("should perform a dot between a vector and a matrix", () => {
+    const vector = [1, 2, 3];
+    const matrix = [[1, 2, 3], [5, 6, 7], [9, 0, 1], [1, 2, 3]];
+    const expectedOutput = [14, 38, 12, 14];
+
+    assert.deepEqual(dotVectorMatrix(vector, matrix), expectedOutput);
+  });
+});
+
+describe("relu", () => {
+  it("should return the same vector with all negative numbers converted to 0s", () => {
+    const vector = [1, 2, -5, 0, -9];
+    const expectedOutput = [1, 2, 0, 0, 0];
+
+    assert.deepEqual(relu(vector), expectedOutput);
+  });
+});
+
+describe("transpose", () => {
+  it("should transpose a 4x1 matrix", () => {
+    const matrix = [[1, 2, 3, 4]];
+    const expectedOutput = [[1], [2], [3], [4]];
+
+    assert.deepEqual(transpose(matrix), expectedOutput);
+  });
+
+  it("should transpose a 2x3 matrix", () => {
+    const matrix = [[1, 2], [3, 4], [5, 6]];
+    const expectedOutput = [[1, 3, 5], [2, 4, 6]];
+
+    assert.deepEqual(transpose(matrix), expectedOutput);
+  });
+});
+
+describe("reluToDerivative", () => {
+  it("should return a vector with only 0 or 1 based on the item being negative or positive", () => {
+    const vector = [1, -1, 2, -2, 0];
+    const expectedOutput = [1, 0, 1, 0, 0];
+
+    assert.deepEqual(reluToDerivative(vector), expectedOutput);
   });
 });

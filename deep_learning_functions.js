@@ -67,7 +67,7 @@ function matrixSubtract(matrix1, matrix2) {
 function createZerosMatrix(width, height) {
   const matrix = createMatrix(width, height);
 
-  return matrix.map(row => row.map(_ => Math.random()));
+  return matrix.map(row => row.map(_ => 0));
 }
 
 function calculateAccuracy(
@@ -94,6 +94,60 @@ function findLargestIndex(array) {
   return array.findIndex(currentValue => currentValue === Math.max(...array));
 }
 
+function createRandomMatrix(width, height) {
+  const matrix = [];
+
+  for (
+    let _heightCount = 0;
+    _heightCount < height;
+    _heightCount = _heightCount + 1
+  ) {
+    const row = [];
+
+    for (
+      let _widthCount = 0;
+      _widthCount < width;
+      _widthCount = _widthCount + 1
+    ) {
+      row.push(Math.random() * 2 - 1);
+    }
+
+    matrix.push(row);
+  }
+
+  return matrix;
+}
+
+function dotVectorMatrix(vector, matrix) {
+  return matrix.map(row => dot(vector, row));
+}
+
+function relu(vector) {
+  return vector.map(item => (item > 0 ? item : 0));
+}
+
+function transpose(matrix) {
+  const transposedMatrix = [];
+
+  for (
+    let matrixWidthIndex = 0;
+    matrixWidthIndex < matrix[0].length;
+    matrixWidthIndex = matrixWidthIndex + 1
+  ) {
+    const newRow = [];
+
+    matrix.forEach(row => newRow.push(row[matrixWidthIndex]));
+
+    transposedMatrix.push(newRow);
+  }
+
+  return transposedMatrix;
+}
+
+function reluToDerivative(vector) {
+  return vector.map(item => (item > 0 ? 1 : 0));
+}
+
 module.exports = {
   vectorMultiply,
   scalarVectorMultiply,
@@ -107,5 +161,10 @@ module.exports = {
   matrixSubtract,
   createZerosMatrix,
   findLargestIndex,
-  calculateAccuracy
+  calculateAccuracy,
+  createRandomMatrix,
+  dotVectorMatrix,
+  relu,
+  transpose,
+  reluToDerivative
 };
