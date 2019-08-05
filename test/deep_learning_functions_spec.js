@@ -221,8 +221,8 @@ describe("createRandomMatrix", () => {
 describe("dotVectorMatrix", () => {
   it("should perform a dot between a vector and a matrix", () => {
     const vector = [1, 2, 3];
-    const matrix = [[1, 2, 3], [5, 6, 7], [9, 0, 1], [1, 2, 3]];
-    const expectedOutput = [14, 38, 12, 14];
+    const matrix = [[1, 2, 3, 4], [5, 6, 7, 5], [9, 0, 1, 6]];
+    const expectedOutput = [38, 14, 20, 32];
 
     assert.deepEqual(dotVectorMatrix(vector, matrix), expectedOutput);
   });

@@ -119,7 +119,7 @@ function createRandomMatrix(width, height) {
 }
 
 function dotVectorMatrix(vector, matrix) {
-  return matrix.map(row => dot(vector, row));
+  return transpose(matrix).map(row => dot(vector, row));
 }
 
 function relu(vector) {

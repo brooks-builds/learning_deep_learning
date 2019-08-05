@@ -1,35 +1,35 @@
-const {
-  dot,
-  scalarVectorMultiply,
-  vectorSubtract
-} = require("../deep_learning_functions");
+const math = require("mathjs");
 
-const streetlight_configurations = [
-  [1, 0, 1],
-  [0, 1, 1],
-  [0, 0, 1],
-  [1, 1, 1],
-  [0, 1, 1],
-  [1, 0, 1]
-];
-const did_walk = [[0], [1], [0], [1], [1], [0]];
-let weights = [Math.random(), Math.random(), Math.random()];
-const alpha = 0.1;
+function relu(x) {
+  return x > 0 ? x : 0;
+}
 
-for (let _count = 0; _count < 40; _count = _count + 1) {
+function relu2deriv(output) {
+  return output > 0 ? 1 : 0;
+}
+
+const streetlights = math.matrix([[1, 0, 1], [0, 1, 1], [0, 0, 1], [1, 1, 1]]);
+
+const walkVsStop = math.transpose(math.matrix([[0, 1, 0, 1]]));
+
+const alpha = 0.01;
+const hiddenSize = 4;
+
+let layer1Weights = math.zeros(3, hiddenSize);
+layer1Weights = layer1Weights.map(() => math.random(-1, 1));
+
+const layer2Weights = math.zeros(hiddenSize, 1).map(() => math.random(-1, 1));
+
+for (let iteration = 0; iteration < 1; iteration = iteration + 1) {
   let totalErrors = 0;
-  streetlight_configurations.forEach((currentInput, index) => {
-    const currentExpectedOutput = did_walk[index];
-    const prediction = dot(currentInput, weights);
-    const error = Math.pow(prediction - currentExpectedOutput[0], 2);
-    const delta = prediction - currentExpectedOutput[0];
-    const weightedDelta = scalarVectorMultiply(delta, currentInput);
-    const limitedWeightedDelta = scalarVectorMultiply(alpha, weightedDelta);
+  const [streetlightRows] = streetlights.size();
 
-    weights = vectorSubtract(weights, limitedWeightedDelta);
-    totalErrors = totalErrors + error;
-    console.log("prediction: ", prediction);
-    console.log("expected output: ", currentExpectedOutput[0]);
-  });
-  console.log("total errors: ", totalErrors);
+  for (
+    let streetlightRow = 0;
+    streetlightRow < streetlightRows;
+    streetlightRow = streetlightRow + 1
+  ) {
+    const layer0 = math.row(streetlights, streetlightRow);
+    const layer1 = [];
+  }
 }

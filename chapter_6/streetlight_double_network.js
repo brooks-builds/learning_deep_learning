@@ -10,61 +10,32 @@ const {
   outerProduct
 } = require("../deep_learning_functions");
 
-const { streetlightTesting, streetlightTraining } = generateStreetlightData(4);
-const hiddenLayerSize = 4;
-let layer1Weights = createRandomMatrix(
-  streetlightTesting.inputs[0].length,
-  hiddenLayerSize
-);
-const iterationCount = 60;
-let layer2Weights = createRandomMatrix(
-  hiddenLayerSize,
-  streetlightTraining.outputs[0].length
-);
+const { streetlightTesting, streetlightTraining } = generateStreetlightData(1);
 const alpha = 0.01;
+const hiddenSize = 4;
+const layer1Weights = createRandomMatrix(
+  hiddenSize,
+  streetlightTesting.inputs[0].length
+);
+const layer2Weights = createRandomMatrix(1, hiddenSize);
 
-for (
-  let iterations = 0;
-  iterations < iterationCount;
-  iterations = iterations + 1
-) {
-  let totalErrors = 0;
+for (let iteration = 0; iteration < 1; iteration = iteration + 1) {
+  let layer2Errors = 0;
 
-  streetlightTraining.inputs.forEach((streetlights, streetlightsIndex) => {
-    let hiddenLayerPredictions = dotVectorMatrix(streetlights, layer1Weights);
+  for (
+    let streetlightsIndex = 0;
+    streetlightsIndex < streetlightTraining.inputs.length;
+    streetlightsIndex = streetlightsIndex + 1
+  ) {
+    const layer0 = streetlightTraining.inputs[streetlightsIndex];
+    const layer1 = relu(dotVectorMatrix(layer0, layer1Weights));
+    const layer2 = dotVectorMatrix(layer1, layer2Weights);
 
-    hiddenLayerPredictions = relu(hiddenLayerPredictions);
-
-    const finalPrediction = dotVectorMatrix(
-      relu(hiddenLayerPredictions),
-      layer2Weights
-    );
-    let finalDelta = vectorSubtract(
-      finalPrediction,
-      streetlightTraining.outputs[streetlightsIndex]
-    );
-
-    totalErrors = finalDelta.reduce(
-      (total, delta) => total + Math.pow(delta, 2),
-      totalErrors
-    );
-
-    let layer1Delta = dotVectorMatrix(finalDelta, transpose(layer2Weights));
-
-    layer1Delta = vectorMultiply(
-      layer1Delta,
-      reluToDerivative(hiddenLayerPredictions)
-    );
-    finalDelta = outerProduct(finalDelta, hiddenLayerPredictions);
-    layer1Delta = outerProduct(streetlights, layer1Delta);
-    layer2Weights = matrixSubtract(layer2Weights, transpose(finalDelta));
-    layer1Weights = matrixSubtract(layer1Weights, layer1Delta);
-
-    console.log(
-      finalPrediction,
-      streetlightTraining.outputs[streetlightsIndex]
-    );
-  });
+    layer2Errors =
+      layer2Errors +
+      Math.pow(layer2[0] - streetlightTraining.outputs[streetlightsIndex], 2);
+    console.log(layer2Errors);
+  }
 }
 
 function generateStreetlightData(numberToCreate) {
@@ -99,12 +70,4 @@ function generateStreetlightData(numberToCreate) {
     streetlightTesting,
     streetlightTraining
   };
-}
-
-function calculateAccuracy(testingData, layer1Weights, layer2Weights) {
-  testingData.inputs.forEach((inputs, index) => {});
-}
-
-function neuralNetwork(inputs, weights) {
-  return dotVectorMatrix(inputs, weights);
 }
