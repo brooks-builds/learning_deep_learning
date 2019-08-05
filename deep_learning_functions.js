@@ -148,6 +148,14 @@ function reluToDerivative(vector) {
   return vector.map(item => (item > 0 ? 1 : 0));
 }
 
+function matrixMultiply(matrix1, matrix2) {
+  return matrix1.map((row, index) => vectorMultiply(row, matrix2[index]));
+}
+
+function dotMatrix(matrix1, matrix2) {
+  return matrix1.map((row, index) => dot(row, transpose(matrix2)[index]));
+}
+
 module.exports = {
   vectorMultiply,
   scalarVectorMultiply,
@@ -166,5 +174,7 @@ module.exports = {
   dotVectorMatrix,
   relu,
   transpose,
-  reluToDerivative
+  reluToDerivative,
+  matrixMultiply,
+  dotMatrix
 };

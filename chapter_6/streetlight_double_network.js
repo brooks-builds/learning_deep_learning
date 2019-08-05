@@ -7,17 +7,18 @@ const {
   vectorMultiply,
   reluToDerivative,
   matrixSubtract,
-  outerProduct
+  outerProduct,
+  matrixMultiply
 } = require("../deep_learning_functions");
 
 const { streetlightTesting, streetlightTraining } = generateStreetlightData(1);
 const alpha = 0.01;
 const hiddenSize = 4;
-const layer1Weights = createRandomMatrix(
+let layer1Weights = createRandomMatrix(
   hiddenSize,
   streetlightTesting.inputs[0].length
 );
-const layer2Weights = createRandomMatrix(1, hiddenSize);
+let layer2Weights = createRandomMatrix(1, hiddenSize);
 
 for (let iteration = 0; iteration < 1; iteration = iteration + 1) {
   let layer2Errors = 0;
@@ -34,7 +35,15 @@ for (let iteration = 0; iteration < 1; iteration = iteration + 1) {
     layer2Errors =
       layer2Errors +
       Math.pow(layer2[0] - streetlightTraining.outputs[streetlightsIndex], 2);
-    console.log(layer2Errors);
+
+    const layer2Delta =
+      layer2[0] - streetlightTraining.outputs[streetlightsIndex];
+    const layer1Delta = matrixMultiply(
+      [dotVectorMatrix([layer2Delta], transpose(layer2Weights))],
+      [reluToDerivative(layer1)]
+    );
+
+    console.log();
   }
 }
 

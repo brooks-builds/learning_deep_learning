@@ -18,7 +18,9 @@ const {
   dotVectorMatrix,
   relu,
   transpose,
-  reluToDerivative
+  reluToDerivative,
+  matrixMultiply,
+  dotMatrix
 } = require("../deep_learning_functions");
 
 const assert = chai.assert;
@@ -259,5 +261,33 @@ describe("reluToDerivative", () => {
     const expectedOutput = [1, 0, 1, 0, 0];
 
     assert.deepEqual(reluToDerivative(vector), expectedOutput);
+  });
+});
+
+describe("matrixMultiply", () => {
+  it("should multiply two matrixes of the same shape together", () => {
+    const matrix1 = [[1, 2, 3, 4]];
+    const matrix2 = [[5, 6, 7, 8]];
+    const expectedOutput = [[5, 12, 21, 32]];
+
+    assert.deepEqual(matrixMultiply(matrix1, matrix2), expectedOutput);
+  });
+});
+
+describe("dotMatrix", () => {
+  it("should dot matrices together", () => {
+    const matrix1 = [[1, 2], [3, 4], [5, 6]];
+    const matrix2 = [[1, 2, 3], [4, 5, 6]];
+    const expectedOutput = [[9, 12, 15], [19, 26, 23], [29, 40, 51]];
+
+    assert.deepEqual(dotMatrix(matrix1, matrix2), expectedOutput);
+  });
+
+  it("should dot matrices together", () => {
+    const matrix1 = [[1], [3], [5], [6]];
+    const matrix2 = [[10]];
+    const expectedOutput = [[10], [30], [50], [60]];
+
+    assert.deepEqual(dotMatrix(matrix1, matrix2), expectedOutput);
   });
 });
