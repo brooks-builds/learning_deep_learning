@@ -13,9 +13,7 @@ const {
   scalarMatrixMultiply
 } = require("../deep_learning_functions");
 
-const { streetlightTesting, streetlightTraining } = generateStreetlightData(
-  1000
-);
+const { streetlightTesting, streetlightTraining } = generateStreetlightData(5);
 const alpha = 0.01;
 const hiddenSize = 4;
 let layer1Weights = createRandomMatrix(
@@ -24,7 +22,7 @@ let layer1Weights = createRandomMatrix(
 );
 let layer2Weights = createRandomMatrix(1, hiddenSize);
 
-for (let iteration = 0; iteration < 600; iteration = iteration + 1) {
+for (let iteration = 0; iteration < 1000; iteration = iteration + 1) {
   let layer2Errors = 0;
 
   for (
@@ -33,8 +31,11 @@ for (let iteration = 0; iteration < 600; iteration = iteration + 1) {
     streetlightsIndex = streetlightsIndex + 1
   ) {
     const layer0 = streetlightTraining.inputs[streetlightsIndex];
-    const layer1 = relu(dotVectorMatrix(layer0, layer1Weights));
-    const layer2 = dotVectorMatrix(layer1, layer2Weights);
+    const { layer2, layer1 } = neuralNetwork(
+      layer0,
+      layer1Weights,
+      layer2Weights
+    );
 
     layer2Errors =
       layer2Errors +
@@ -59,17 +60,14 @@ for (let iteration = 0; iteration < 600; iteration = iteration + 1) {
       layer1Weights,
       scalarMatrixMultiply(alpha, dotMatrix(transpose([layer0]), layer1Delta))
     );
-
-    console.log(
-      "prediction: ",
-      Math.round(layer2),
-      "output: ",
-      streetlightTraining.outputs[streetlightsIndex]
-    );
   }
 
   if (iteration % 10 === 0) {
     console.log("error: ", layer2Errors);
+    console.log(
+      "accuracy: ",
+      checkAccuracy(streetlightTesting, layer1Weights, layer2Weights)
+    );
   }
 }
 
@@ -105,4 +103,35 @@ function generateStreetlightData(numberToCreate) {
     streetlightTesting,
     streetlightTraining
   };
+}
+
+function neuralNetwork(layer0, layer1Weights, layer2Weights) {
+  const layer1 = relu(dotVectorMatrix(layer0, layer1Weights));
+  const layer2 = dotVectorMatrix(layer1, layer2Weights);
+
+  return {
+    layer1,
+    layer2
+  };
+}
+
+function checkAccuracy(testingData, layer1Weights, layer2Weights) {
+  let correctCount = 0;
+
+  testingData.inputs.forEach((streetlights, index) => {
+    const { layer2 } = neuralNetwork(
+      streetlights,
+      layer1Weights,
+      layer2Weights
+    );
+
+    const prediction = Math.round(layer2[0]);
+    const correctOutput = testingData.outputs[index][0];
+
+    if (prediction === correctOutput) {
+      correctCount = correctCount + 1;
+    }
+  });
+
+  return (correctCount / testingData.outputs.length) * 100;
 }
