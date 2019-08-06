@@ -153,7 +153,9 @@ function matrixMultiply(matrix1, matrix2) {
 }
 
 function dotMatrix(matrix1, matrix2) {
-  return matrix1.map((row, index) => dot(row, transpose(matrix2)[index]));
+  return matrix1.map(matrix1row =>
+    transpose(matrix2).map(matrix2Row => dot(matrix1row, matrix2Row))
+  );
 }
 
 module.exports = {

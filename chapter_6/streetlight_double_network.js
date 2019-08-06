@@ -8,10 +8,14 @@ const {
   reluToDerivative,
   matrixSubtract,
   outerProduct,
-  matrixMultiply
+  matrixMultiply,
+  dotMatrix,
+  scalarMatrixMultiply
 } = require("../deep_learning_functions");
 
-const { streetlightTesting, streetlightTraining } = generateStreetlightData(1);
+const { streetlightTesting, streetlightTraining } = generateStreetlightData(
+  1000
+);
 const alpha = 0.01;
 const hiddenSize = 4;
 let layer1Weights = createRandomMatrix(
@@ -20,7 +24,7 @@ let layer1Weights = createRandomMatrix(
 );
 let layer2Weights = createRandomMatrix(1, hiddenSize);
 
-for (let iteration = 0; iteration < 1; iteration = iteration + 1) {
+for (let iteration = 0; iteration < 600; iteration = iteration + 1) {
   let layer2Errors = 0;
 
   for (
@@ -43,7 +47,29 @@ for (let iteration = 0; iteration < 1; iteration = iteration + 1) {
       [reluToDerivative(layer1)]
     );
 
-    console.log();
+    layer2Weights = matrixSubtract(
+      layer2Weights,
+      scalarMatrixMultiply(
+        alpha,
+        dotMatrix(transpose([layer1]), [[layer2Delta]])
+      )
+    );
+
+    layer1Weights = matrixSubtract(
+      layer1Weights,
+      scalarMatrixMultiply(alpha, dotMatrix(transpose([layer0]), layer1Delta))
+    );
+
+    console.log(
+      "prediction: ",
+      Math.round(layer2),
+      "output: ",
+      streetlightTraining.outputs[streetlightsIndex]
+    );
+  }
+
+  if (iteration % 10 === 0) {
+    console.log("error: ", layer2Errors);
   }
 }
 
